@@ -1,72 +1,13 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { TolgeeService } from "./services/tolgee.service";
-import {
-  escapeQuote,
-  includesFormatStringMoreThanOne,
-  includesHtmlTag,
-} from "./utils/string.utils";
-import { js2xml } from "xml-js";
-import fs from "fs-extra";
 import path from "path";
+
+import { TolgeeService } from "./services/tolgee.service";
 import { supportedFormats } from "./types";
 import { pullXml } from "./formatters/xml.format";
 
 const program = new Command();
-
-/**
- * JSON 파일을 XML로 변환하는 함수
- */
-function convertJsonToXml(jsonContent: Record<string, any>): string {
-  const result = Object.entries(jsonContent)
-    .filter(([key, value]) => typeof value === "string")
-    .map(([key, value]) => [key, value as string])
-    .map(([key, value]) => [key, escapeQuote(value as string)])
-    .map(([key, value]) => {
-      let v:
-        | {
-            _cdata: string;
-          }
-        | {
-            _text: string;
-          } = { _text: value };
-
-      if (includesHtmlTag(value)) {
-        v = { _cdata: value };
-      }
-
-      return {
-        _attributes: {
-          name: key,
-          formatted: includesFormatStringMoreThanOne(value)
-            ? "false"
-            : undefined,
-        },
-        ...v,
-      };
-    });
-
-  const xml = js2xml(
-    {
-      _declaration: {
-        _attributes: {
-          version: "1.0",
-          encoding: "UTF-8",
-        },
-      },
-      resources: {
-        string: result,
-      },
-    },
-    {
-      compact: true,
-      spaces: 2,
-    }
-  );
-
-  return xml;
-}
 
 program
   .version("1.0.0")
@@ -100,6 +41,11 @@ program
       process.exit(1);
     }
 
+    const tags = options.tags;
+    const excludeTags = options.excludeTags;
+
+    console.log(tags, excludeTags);
+
     // TolgeeService 인스턴스 생성
     const tolgee = new TolgeeService({
       apiKey: options.apiKey,
@@ -113,6 +59,8 @@ program
         resultFiles = await pullXml(tolgee, {
           outputDir: options.outputDir,
           projectId: options.projectId,
+          tags,
+          excludeTags,
         });
         break;
     }
@@ -131,6 +79,8 @@ program
   .option("-p, --projectId <projectId>", "Tolgee Project ID")
   .option("-b, --baseUrl [baseUrl]", "Tolgee Base URL", "https://app.tolgee.io")
   .option("-f, --format [format]", "Output format (xml)", "xml")
-  .option("-o, --outputDir [outputDir]", "Output Directory", "i18n");
+  .option("-o, --outputDir [outputDir]", "Output Directory", "i18n")
+  .option("-t, --tags [tags]", "Tags to filter", "android")
+  .option("--excludeTags [excludeTags]", "Exclude Tags", "deprecated");
 
 program.parse(process.argv);

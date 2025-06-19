@@ -22,16 +22,24 @@ class TolgeeService {
     });
   }
 
-  async exportData(projectId: string) {
+  async exportData(
+    projectId: string,
+    {
+      tags,
+      excludeTags,
+    }: {
+      tags: string;
+      excludeTags: string;
+    }
+  ) {
     const response = await this.client.get(`/projects/${projectId}/export`, {
       responseType: "arraybuffer",
       params: {
         format: "JSON",
         structureDelimiter: "",
         messageFormat: "C_SPRINTF",
-        // filterTagIn: ["web"].join(","),
-        // filterTagNotIn: ["deprecated"].join(","),
-        // escapeHtml: true,
+        filterTagIn: tags,
+        filterTagNotIn: excludeTags,
       },
     });
     return response;
@@ -40,12 +48,19 @@ class TolgeeService {
   async extractAndSaveFiles({
     projectId,
     outputDir,
+    tags,
+    excludeTags,
   }: {
     projectId: string;
     outputDir: string;
+    tags: string;
+    excludeTags: string;
   }) {
     try {
-      const response = await this.exportData(projectId);
+      const response = await this.exportData(projectId, {
+        tags,
+        excludeTags,
+      });
 
       // zip 데이터를 Buffer로 변환
       const zipBuffer = Buffer.from(response.data);

@@ -1,5 +1,17 @@
+export function escapeStr(str: string) {
+  return escapeQuote(escapeDoubleQuote(escapeNewLine(str)));
+}
+
 export function escapeQuote(str: string) {
   return str.replace(/'/g, `\\'`);
+}
+
+export function escapeDoubleQuote(str: string) {
+  return str.replace(/"/g, `\\"`);
+}
+
+export function escapeNewLine(str: string) {
+  return str.replace(/\n/g, `\\n`);
 }
 
 export function includesFormatStringMoreThanOne(str: string) {

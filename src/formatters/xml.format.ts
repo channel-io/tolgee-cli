@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
-import { Command, program } from "commander";
 import { TolgeeService } from "../services/tolgee.service";
 import {
-  escapeQuote,
+  escapeStr,
   includesFormatStringMoreThanOne,
   includesHtmlTag,
 } from "../utils/string.utils";
@@ -18,7 +17,7 @@ function convertJsonToXml(jsonContent: Record<string, any>): string {
   const result = Object.entries(jsonContent)
     .filter(([key, value]) => typeof value === "string")
     .map(([key, value]) => [key, value as string])
-    .map(([key, value]) => [key, escapeQuote(value as string)])
+    .map(([key, value]) => [key, escapeStr(value as string)])
     .map(([key, value]) => {
       let v:
         | {
@@ -87,7 +86,7 @@ export async function processAllFiles(
       const outputPath = path.join(outputDir, `${fileName}.xml`);
 
       // 변환된 파일 저장
-      await fs.writeFile(outputPath, content);
+      await fs.writeFile(outputPath, content + "\n");
 
       // 원본 JSON 파일 제거
       await fs.remove(file.path);
@@ -105,11 +104,15 @@ export async function pullXml(
   options: {
     outputDir: string;
     projectId: string;
+    tags: string;
+    excludeTags: string;
   }
 ) {
   const { files } = await tolgee.extractAndSaveFiles({
     outputDir: options.outputDir,
     projectId: options.projectId,
+    tags: options.tags,
+    excludeTags: options.excludeTags,
   });
 
   // 모든 파일 처리
