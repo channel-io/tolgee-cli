@@ -15,6 +15,7 @@ import { SupportedFormat, supportedFormats } from "../types";
  */
 function convertJsonToXml(jsonContent: Record<string, any>): string {
   const result = Object.entries(jsonContent)
+    .map(([key, value]) => [key, value ?? ""])
     .filter(([key, value]) => typeof value === "string")
     .map(([key, value]) => [key, value as string])
     .map(([key, value]) => [key, escapeStr(value as string)])
@@ -89,7 +90,7 @@ export async function processAllFiles(
       await fs.writeFile(outputPath, content + "\n");
 
       // 원본 JSON 파일 제거
-      // await fs.remove(file.path);
+      await fs.remove(file.path);
 
       resultFiles.push(outputPath);
     } catch (error) {
