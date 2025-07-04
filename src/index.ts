@@ -6,6 +6,7 @@ import path from "path";
 import { TolgeeService } from "./services/tolgee.service";
 import { supportedFormats } from "./types";
 import { pullXml } from "./formatters/xml.format";
+import { pullJson } from "./formatters/json.format";
 
 const program = new Command();
 
@@ -49,20 +50,29 @@ program
     // TolgeeService 인스턴스 생성
     const tolgee = new TolgeeService({
       apiKey: options.apiKey,
-      baseUrl: options.baseUrl,
+      apiUrl: options.apiUrl,
     });
 
     let resultFiles: string[] = [];
 
     switch (options.format) {
-      case "xml":
+      case "XML":
         resultFiles = await pullXml(tolgee, {
-          outputDir: options.outputDir,
+          outputDir: options.path,
           projectId: options.projectId,
           tags,
           excludeTags,
         });
         break;
+      case "JSON":
+        resultFiles = await pullJson(tolgee, {
+          outputDir: options.path,
+          projectId: options.projectId,
+          tags,
+          excludeTags,
+        });
+        break;
+      default:
     }
 
     // 결과 출력
@@ -75,12 +85,12 @@ program
   });
 
 program
-  .option("-a, --apiKey <apiKey>", "Tolgee API Key")
-  .option("-p, --projectId <projectId>", "Tolgee Project ID")
-  .option("-b, --baseUrl [baseUrl]", "Tolgee Base URL", "https://app.tolgee.io")
-  .option("-f, --format [format]", "Output format (xml)", "xml")
-  .option("-o, --outputDir [outputDir]", "Output Directory", "i18n")
-  .option("-t, --tags [tags]", "Tags to filter", "android")
-  .option("--excludeTags [excludeTags]", "Exclude Tags", "deprecated");
+  .option("--api-key <apiKey>", "Tolgee API Key")
+  .option("--project-id <projectId>", "Tolgee Project ID")
+  .option("--api-url [apiUrl]", "Tolgee Base URL", "https://app.tolgee.io")
+  .option("--format [format]", "Output format (XML, JSON)", "JSON")
+  .option("--path [path]", "Output Directory", "i18n")
+  .option("--tags [tags]", "Tags to filter")
+  .option("--exclude-tags [excludeTags]", "Exclude Tags");
 
 program.parse(process.argv);

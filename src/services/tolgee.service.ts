@@ -5,17 +5,17 @@ import path from "path";
 
 interface TolgeeServiceOptions {
   apiKey: string;
-  baseUrl?: string;
+  apiUrl?: string;
 }
 
 class TolgeeService {
   client: AxiosInstance;
 
   constructor(options: TolgeeServiceOptions) {
-    const { apiKey, baseUrl } = options;
+    const { apiKey, apiUrl } = options;
 
     this.client = axios.create({
-      baseURL: `${baseUrl}/v2`,
+      baseURL: `${apiUrl}/v2`,
       headers: {
         "X-API-Key": apiKey,
       },
@@ -40,6 +40,7 @@ class TolgeeService {
         messageFormat: "C_SPRINTF",
         filterTagIn: tags,
         filterTagNotIn: excludeTags,
+        filterState: "TRANSLATED,UNTRANSLATED,REVIEWED",
       },
     });
     return response;

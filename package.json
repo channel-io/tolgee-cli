@@ -1,6 +1,6 @@
 {
   "name": "@channel.io/tolgee-cli",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "author": "Channel.io",
   "license": "MIT",
   "description": "Tolgee CLI tool for managing translations",
