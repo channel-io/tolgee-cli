@@ -1,6 +1,6 @@
 {
   "name": "@channel.io/tolgee-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Channel.io",
   "license": "MIT",
   "description": "Tolgee CLI tool for managing translations",
@@ -26,7 +26,7 @@
     "cli"
   ],
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "adm-zip": "^0.5.10",
