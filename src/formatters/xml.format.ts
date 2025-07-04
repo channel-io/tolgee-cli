@@ -89,7 +89,7 @@ export async function processAllFiles(
       await fs.writeFile(outputPath, content + "\n");
 
       // 원본 JSON 파일 제거
-      await fs.remove(file.path);
+      // await fs.remove(file.path);
 
       resultFiles.push(outputPath);
     } catch (error) {
