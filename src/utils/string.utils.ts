@@ -51,7 +51,10 @@ export function escapeNewLine(str: string) {
 }
 
 export function includesFormatStringMoreThanOne(str: string) {
-  return (str.match(/%[sd]/g) || []).length > 1;
+  // Match both standard format specifiers (%s, %d) and
+  // named format specifiers like %(subject)s, %(object)s
+  // AAPT treats %(name)s as a format specifier, so we need to count them too
+  return (str.match(/%\([^)]+\)[sd]|%[sd]/g) || []).length > 1;
 }
 
 // html_tag_pattern = re.compile(r'<[a-zA-Z][^>]*>')
